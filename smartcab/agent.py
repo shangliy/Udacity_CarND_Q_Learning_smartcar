@@ -16,11 +16,22 @@ class LearningAgent(Agent):
         # TODO: Initialize any additional variables here
         self.actions = [None, 'forward', 'left', 'right']
         self.Qtable = {}
-        self.epsilon = 0.1
-        self.gamma = 0.5
-        self.learning_rate = 0.3
-        self.default_Q = 1
+        self.epsilon = 0   # set as 1 for total random action selection
+        self.gamma = 0.9
+        self.learning_rate = 0.05
+        self.default_Q = 4
         self.fault = 0
+        self.re1 = []
+        self.re2 = []
+        self.re3 = []
+        self.re4 = []
+        self.re11 = 0
+        self.re12 = 0
+        self.re13 = 0
+        self.re14 = 0
+
+
+
 
 
     def reset(self, destination=None):
@@ -31,6 +42,18 @@ class LearningAgent(Agent):
         self.prev_reward = None
         self.state = None
         self.next_waypoint = None
+        self.re1.append(self.re11)
+        self.re2.append(self.re12)
+        self.re3.append(self.re13)
+        self.re4.append(self.re14)
+
+        self.re11 = 0
+        self.re12 = 0
+        self.re13 = 0
+        self.re14 = 0
+
+
+
 
 
 
@@ -54,13 +77,22 @@ class LearningAgent(Agent):
         Qcurrent = [self.Qtable[(self.state, None)], self.Qtable[(self.state, 'forward')], self.Qtable[(self.state, 'left')], self.Qtable[(self.state, 'right')]]
 
         if random.random() < self.epsilon:
-            action = self.actions[random.randint(0,3)]
+            action = self.actions[random.randint(1,3)]  #a random choice between the possible actions with None parsed out
         else:
             action = self.actions[np.argmax(Qcurrent)]
 
 
         # Execute action and get reward
         reward = self.env.act(self, action)
+        if reward == -0.5:
+            self.re11 = self.re11 + 1
+        elif reward == -1:
+            self.re12 = self.re12 + 1
+        elif reward == 0:
+            self.re13 = self.re13 + 1
+        else:
+            self.re14 = self.re14 + 1
+
 
         # TODO: Learn policy based on state, action, reward
         if self.prev_state != None:
@@ -71,7 +103,9 @@ class LearningAgent(Agent):
         self.prev_action = action
         self.prev_reward = reward
 
-        print "LearningAgent.update(): deadline = {}, inputs = {}, action = {}, reward = {}".format(deadline, inputs, action, reward)  # [debug]
+        #print "LearningAgent.update(): deadline = {}, inputs = {}, action = {}, reward = {}".format(deadline, inputs, action, reward)  # [debug]
+
+
         if deadline == 0:
             self.fault = self.fault + 1
 
@@ -88,6 +122,16 @@ def run():
                 # NOTE: To speed up simulation, reduce update_delay and/or set display=False
     sim.run(n_trials=100)  # run for a specified number of trials
                     # NOTE: To quit midway, press Esc or close pygame window, or hit Ctrl+C on the command-line
+    QTABLE = a.Qtable;
+    print type(QTABLE)
+    for key in QTABLE:
+        print str(key) + ':'+ str(QTABLE[key])
+    print "The success rate of 100 trial is " + str(100-a.fault)
+    print a.re1
+    print a.re2
+    print a.re3
+    print a.re4
+
 
     '''
     Suss_arr = []
