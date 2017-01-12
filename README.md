@@ -1,6 +1,8 @@
 # Project 4: Reinforcement Learning
 ## Train a Smartcab How to Drive
 
+![smartcar](https://github.com/shangliy/smartcar/blob/master/smartcab.png?raw=true)
+
 ### Install
 
 This project requires **Python 2.7** with the [pygame](https://www.pygame.org/wiki/GettingStarted
